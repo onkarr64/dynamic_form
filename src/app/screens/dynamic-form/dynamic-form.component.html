@@ -1,0 +1,54 @@
+<div class="form-center">
+<form [formGroup]="form" (ngSubmit)="submitForm()" class="form-container">
+  <div class="form-panel">
+    <!-- Iterate through unique groups -->
+    <div *ngFor="let group of getUniqueGroups()" class="group-section">
+      <h3 class="group-title">{{group}}</h3>
+      <div class="form-group" *ngFor="let field of getFieldsByGroup(group)"
+           [hidden]="form.get(field.name)?.disabled">
+        <label for="{{ field.name }}">{{ field.name }}
+          <span *ngIf="field.validator?.includes('required')">*</span>
+        </label>
+
+        <input [formControlName]="field.name"
+               *ngIf="field.fieldtype === 'text'"
+               class="form-control"
+               [ngClass]="{'is-invalid': isFieldInvalid(field.name)}">
+
+        <input type="date"
+               [formControlName]="field.name"
+               *ngIf="field.fieldtype === 'date'"
+               class="form-control"
+               [ngClass]="{'is-invalid': isFieldInvalid(field.name)}">
+
+        <input type="number"
+               [formControlName]="field.name"
+               *ngIf="field.fieldtype === 'integer'"
+               class="form-control"
+               [ngClass]="{'is-invalid': isFieldInvalid(field.name)}">
+
+        <select [formControlName]="field.name"
+                *ngIf="field.fieldtype === 'boolean'"
+                class="form-control"
+                [ngClass]="{'is-invalid': isFieldInvalid(field.name)}">
+          <option *ngFor="let option of field.selectList">{{ option }}</option>
+        </select>
+
+        <div class="invalid-feedback" *ngIf="isFieldInvalid(field.name)">
+          <span *ngIf="form.get(field.name)?.errors?.['required']">
+            {{field.name}} is required
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Save</button>
+
+    <br>
+    <div *ngIf="form?.valid">
+      <h3>Form Data</h3>
+      <pre>{{ form.value | json }}</pre>
+    </div>
+  </div>
+</form>
+</div>
